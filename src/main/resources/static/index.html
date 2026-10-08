@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="VitalScale - Advanced BMI Calculator & Health Analytics with MySQL Database persistence. Calculate BMI, view personalized health insights, and track historical body records.">
-    <title>VitalScale | BMI Calculator & MySQL Health Records</title>
-    <!-- Modern Typography: Plus Jakarta Sans -->
+    <meta name="description" content="Simple, neat, and accurate BMI Calculator with MySQL health records. Calculate Body Mass Index and track body metrics.">
+    <title>BMI Calculator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,186 +12,161 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Header / Navigation Bar -->
+        <!-- Header -->
         <header class="app-header">
-            <div class="brand-wrapper">
-                <div class="brand-logo" aria-hidden="true">
-                    ⚡
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l.77.78L12 20.66l7.65-7.65.77-.78a5.4 5.4 0 0 0 0-7.65z"></path>
+                    </svg>
                 </div>
-                <div class="brand-title">
-                    <h1>VitalScale Pro</h1>
-                    <p>Health Analytics & MySQL Body Record Tracker</p>
+                <div class="brand-text">
+                    <h1>BMI Calculator</h1>
+                    <p>Body mass index and health record tracker</p>
                 </div>
             </div>
 
             <div class="header-actions">
-                <button id="dbStatusPill" class="db-status-pill" title="Click to view database settings" aria-label="Database Status">
+                <button id="dbStatusPill" class="db-status-pill" type="button" title="View MySQL status">
                     <span id="dbStatusDot" class="status-dot"></span>
                     <span id="dbStatusText">Checking MySQL...</span>
                 </button>
-                <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+                <button id="themeToggleBtn" class="theme-toggle-btn" type="button" title="Toggle theme" aria-label="Toggle theme">
                     ☀️
                 </button>
             </div>
         </header>
 
-        <!-- Main Dashboard -->
-        <main>
+        <!-- Main Content -->
+        <main class="main-content">
             <div class="main-grid">
-                <!-- Left Column: Input Form Card -->
-                <section class="glass-card" aria-labelledby="formHeading">
+                <!-- Left: Form -->
+                <section class="card form-card">
                     <div class="card-header">
-                        <h2 id="formHeading" class="card-title">
-                            <span>👤</span> Enter Body Metrics
-                        </h2>
-                        <p class="card-subtitle">Input your details below to calculate your Body Mass Index</p>
+                        <h2>Body Metrics</h2>
+                        <p>Enter your information to calculate your BMI</p>
                     </div>
 
                     <!-- Unit Switcher -->
-                    <div class="unit-switcher" role="tablist" aria-label="Measurement Units">
-                        <button id="tabMetric" class="unit-tab active" type="button" role="tab" aria-selected="true">
-                            Metric (cm, kg)
-                        </button>
-                        <button id="tabImperial" class="unit-tab" type="button" role="tab" aria-selected="false">
-                            Imperial (ft/in, lbs)
-                        </button>
+                    <div class="unit-switcher" role="tablist">
+                        <button id="tabMetric" class="unit-tab active" type="button" role="tab">Metric (cm, kg)</button>
+                        <button id="tabImperial" class="unit-tab" type="button" role="tab">Imperial (ft, lbs)</button>
                     </div>
 
-                    <!-- Calculator Form -->
                     <form id="bmiForm">
-                        <!-- Full Name -->
                         <div class="form-group">
-                            <label for="nameInput" class="form-label">
-                                Full Name <span class="unit-hint">* Required</span>
-                            </label>
-                            <div class="input-wrapper">
-                                <span class="input-icon" aria-hidden="true">🧑</span>
-                                <input type="text" id="nameInput" class="form-control" placeholder="e.g. John Doe" required autocomplete="name">
+                            <label for="nameInput">Full Name <span class="required">*</span></label>
+                            <input type="text" id="nameInput" class="form-control" placeholder="e.g. Alex Smith" required autocomplete="name">
+                        </div>
+
+                        <div class="form-group">
+                            <div class="label-row">
+                                <label for="ageInput">Age</label>
+                                <span class="unit-tag">Years</span>
+                            </div>
+                            <input type="number" id="ageInput" class="form-control" min="1" max="120" placeholder="e.g. 25" required>
+                            <div class="quick-chips">
+                                <button type="button" class="chip-btn" data-age="18">18</button>
+                                <button type="button" class="chip-btn" data-age="25">25</button>
+                                <button type="button" class="chip-btn" data-age="30">30</button>
+                                <button type="button" class="chip-btn" data-age="45">45</button>
+                                <button type="button" class="chip-btn" data-age="60">60</button>
                             </div>
                         </div>
 
-                        <!-- Age -->
-                        <div class="form-group">
-                            <label for="ageInput" class="form-label">
-                                Age <span class="unit-hint">(Years)</span>
-                            </label>
-                            <div class="input-wrapper">
-                                <span class="input-icon" aria-hidden="true">🎂</span>
-                                <input type="number" id="ageInput" class="form-control" min="1" max="120" placeholder="e.g. 25" required>
-                            </div>
-                            <div class="quick-chips" aria-label="Quick age selector">
-                                <button type="button" class="chip-btn" data-age="18">18y</button>
-                                <button type="button" class="chip-btn" data-age="25">25y</button>
-                                <button type="button" class="chip-btn" data-age="30">30y</button>
-                                <button type="button" class="chip-btn" data-age="45">45y</button>
-                                <button type="button" class="chip-btn" data-age="60">60y</button>
-                            </div>
-                        </div>
-
-                        <!-- Height Input (Metric) -->
+                        <!-- Height (Metric) -->
                         <div id="heightMetricGroup" class="form-group">
-                            <label for="heightInput" class="form-label">
-                                Height <span id="heightUnitLabel" class="unit-hint">(cm)</span>
-                            </label>
-                            <div class="input-wrapper">
-                                <span class="input-icon" aria-hidden="true">📏</span>
-                                <input type="number" id="heightInput" class="form-control" min="50" max="260" step="0.5" value="175" required>
+                            <div class="label-row">
+                                <label for="heightInput">Height</label>
+                                <span id="heightUnitLabel" class="unit-tag">(cm)</span>
                             </div>
-                            <div class="slider-container">
-                                <input type="range" id="heightSlider" class="custom-range" min="50" max="250" value="175">
-                            </div>
+                            <input type="number" id="heightInput" class="form-control" min="50" max="260" step="0.5" value="175" required>
+                            <!-- Hidden range slider preserved for app.js sync -->
+                            <input type="range" id="heightSlider" min="50" max="250" value="175" style="display: none;">
                         </div>
 
-                        <!-- Height Input (Imperial ft & in) -->
+                        <!-- Height (Imperial) -->
                         <div id="heightFeetGroup" class="form-group" style="display: none;">
-                            <label class="form-label">
-                                Height <span class="unit-hint">(Feet & Inches)</span>
-                            </label>
+                            <label>Height (Feet &amp; Inches)</label>
                             <div class="dual-input-row">
-                                <div class="input-wrapper">
-                                    <span class="input-icon" aria-hidden="true">🦶</span>
-                                    <input type="number" id="heightFtInput" class="form-control" min="1" max="8" value="5" placeholder="Feet">
+                                <div class="input-with-tag">
+                                    <input type="number" id="heightFtInput" class="form-control" min="1" max="8" value="5" placeholder="5">
+                                    <span class="input-tag">ft</span>
                                 </div>
-                                <div class="input-wrapper">
-                                    <span class="input-icon" aria-hidden="true">📐</span>
-                                    <input type="number" id="heightInInput" class="form-control" min="0" max="11" value="9" placeholder="Inches">
+                                <div class="input-with-tag">
+                                    <input type="number" id="heightInInput" class="form-control" min="0" max="11" value="9" placeholder="9">
+                                    <span class="input-tag">in</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Weight Input -->
+                        <!-- Weight -->
                         <div class="form-group">
-                            <label for="weightInput" class="form-label">
-                                Weight <span id="weightUnitLabel" class="unit-hint">(kg)</span>
-                            </label>
-                            <div class="input-wrapper">
-                                <span class="input-icon" aria-hidden="true">⚖️</span>
-                                <input type="number" id="weightInput" class="form-control" min="20" max="300" step="0.5" value="70" required>
+                            <div class="label-row">
+                                <label for="weightInput">Weight</label>
+                                <span id="weightUnitLabel" class="unit-tag">(kg)</span>
                             </div>
-                            <div class="slider-container">
-                                <input type="range" id="weightSlider" class="custom-range" min="20" max="250" value="70">
-                            </div>
+                            <input type="number" id="weightInput" class="form-control" min="20" max="300" step="0.5" value="70" required>
+                            <!-- Hidden range slider preserved for app.js sync -->
+                            <input type="range" id="weightSlider" min="20" max="250" value="70" style="display: none;">
                         </div>
 
-                        <!-- Buttons -->
                         <div class="form-actions">
                             <button type="submit" id="submitBtn" class="btn-primary">
                                 <span id="btnSpinner" class="spinner" style="display: none;"></span>
-                                <span id="btnText">Calculate & Save to MySQL</span>
+                                <span id="btnText">Calculate BMI</span>
                             </button>
-                            <button type="reset" id="resetBtn" class="btn-secondary">
-                                Reset
-                            </button>
+                            <button type="reset" id="resetBtn" class="btn-secondary">Reset</button>
                         </div>
                     </form>
                 </section>
 
-                <!-- Right Column: Interactive Results Card -->
-                <section class="glass-card" aria-labelledby="resultsHeading">
+                <!-- Right: Results Card -->
+                <section class="card results-card">
                     <div class="card-header">
-                        <h2 id="resultsHeading" class="card-title">
-                            <span>📊</span> BMI Analysis & Insights
-                        </h2>
-                        <p class="card-subtitle">Real-time health classification & database confirmation</p>
+                        <h2>BMI Analysis</h2>
+                        <p>Score, health category, and healthy target</p>
                     </div>
 
-                    <!-- Empty State Placeholder -->
+                    <!-- Empty State -->
                     <div id="emptyState" class="empty-state">
-                        <div class="empty-state-icon" aria-hidden="true">🫀</div>
-                        <h3>No BMI Calculated Yet</h3>
-                        <p>Fill out the form on the left and submit to view your body mass index score, category rating, and ideal weight target.</p>
+                        <div class="empty-icon">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                        </div>
+                        <h3>No Calculation Yet</h3>
+                        <p>Enter your details on the left and click Calculate BMI to view your results.</p>
                     </div>
 
-                    <!-- Dynamic Results -->
+                    <!-- Results Display -->
                     <div id="resultsDisplay" class="results-container" style="display: none;">
-                        <!-- Animated Speedometer Gauge -->
-                        <div class="gauge-wrapper" aria-hidden="true">
-                            <svg class="gauge-svg" viewBox="0 0 260 140">
+                        <!-- Clean Minimalist Gauge -->
+                        <div class="gauge-wrapper">
+                            <svg class="gauge-svg" viewBox="0 0 240 135" aria-hidden="true">
                                 <defs>
                                     <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                        <stop offset="0%" stop-color="#38bdf8" />
-                                        <stop offset="35%" stop-color="#22c55e" />
+                                        <stop offset="0%" stop-color="#0284c7" />
+                                        <stop offset="35%" stop-color="#10b981" />
                                         <stop offset="65%" stop-color="#f59e0b" />
                                         <stop offset="100%" stop-color="#ef4444" />
                                     </linearGradient>
                                 </defs>
-                                <!-- Gauge background track -->
-                                <path d="M 20 130 A 110 110 0 0 1 240 130" fill="none" stroke="rgba(255, 255, 255, 0.08)" stroke-width="16" stroke-linecap="round" />
-                                <!-- Gauge colored arc -->
-                                <path d="M 20 130 A 110 110 0 0 1 240 130" fill="none" stroke="url(#gaugeGradient)" stroke-width="14" stroke-linecap="round" />
-                                <!-- Pointer Needle -->
+                                <path d="M 30 120 A 90 90 0 0 1 210 120" fill="none" stroke="var(--gauge-track)" stroke-width="12" stroke-linecap="round" />
+                                <path d="M 30 120 A 90 90 0 0 1 210 120" fill="none" stroke="url(#gaugeGradient)" stroke-width="10" stroke-linecap="round" />
                                 <g id="gaugeNeedle" class="gauge-needle">
-                                    <circle cx="130" cy="125" r="9" fill="#f8fafc" />
-                                    <circle cx="130" cy="125" r="5" fill="#6366f1" />
-                                    <polygon points="127,125 130,28 133,125" fill="#f8fafc" />
+                                    <circle cx="120" cy="120" r="6" fill="var(--text-main)" />
+                                    <line x1="120" y1="120" x2="120" y2="42" stroke="var(--text-main)" stroke-width="3" stroke-linecap="round" />
                                 </g>
                             </svg>
                         </div>
 
-                        <!-- Numeric BMI Output -->
+                        <!-- BMI Numeric Value -->
                         <div class="bmi-value-display">
                             <div id="bmiNumber" class="bmi-number">--</div>
-                            <div class="bmi-unit-label">Body Mass Index (kg/m²)</div>
+                            <div class="bmi-unit-label">kg/m²</div>
                         </div>
 
                         <!-- Category Badge -->
@@ -200,14 +174,14 @@
                             Healthy Range
                         </div>
 
-                        <!-- Health Metrics Cards -->
+                        <!-- Metrics Grid -->
                         <div class="metrics-grid">
                             <div class="metric-item">
-                                <div class="metric-label">Ideal Weight (Min)</div>
+                                <div class="metric-label">Min Ideal Weight</div>
                                 <div id="minWeightValue" class="metric-value">--</div>
                             </div>
                             <div class="metric-item">
-                                <div class="metric-label">Ideal Weight (Max)</div>
+                                <div class="metric-label">Max Ideal Weight</div>
                                 <div id="maxWeightValue" class="metric-value">--</div>
                             </div>
                             <div class="metric-item">
@@ -220,67 +194,57 @@
                             </div>
                         </div>
 
-                        <!-- Personalized Health Advice -->
+                        <!-- Health Advice -->
                         <div class="advice-box">
-                            <div class="advice-icon" aria-hidden="true">💡</div>
                             <div class="advice-content">
-                                <h4>Guidance & Health Recommendation</h4>
-                                <p id="adviceText">Loading health guidance...</p>
+                                <h4>Health Guidance</h4>
+                                <p id="adviceText">Loading guidance...</p>
                             </div>
                         </div>
 
-                        <!-- Database Status Callout -->
+                        <!-- Database Alert -->
                         <div id="dbAlert" class="db-alert success">
-                            <span aria-hidden="true">💾</span>
-                            <span id="dbAlertText">Persisted to MySQL database <code>bmi_db.bmi_records</code>.</span>
+                            <span id="dbAlertText">Saved to MySQL database.</span>
                         </div>
                     </div>
                 </section>
             </div>
 
-            <!-- BMI Scale Spectrum Bar Reference -->
-            <section class="glass-card spectrum-section" aria-labelledby="scaleHeading">
+            <!-- WHO Classification Spectrum -->
+            <section class="card spectrum-card">
                 <div class="card-header">
-                    <h3 id="scaleHeading" class="card-title">
-                        <span>🏷️</span> World Health Organization (WHO) BMI Classification
-                    </h3>
+                    <h2>WHO BMI Categories</h2>
+                    <p>Standard classification guidelines</p>
                 </div>
-                <div class="spectrum-bar" role="img" aria-label="BMI Category Scale">
+                <div class="spectrum-bar">
                     <div class="spectrum-segment underweight" title="Underweight: < 18.5"></div>
-                    <div class="spectrum-segment normal" title="Normal weight: 18.5 – 24.9"></div>
+                    <div class="spectrum-segment normal" title="Normal: 18.5 – 24.9"></div>
                     <div class="spectrum-segment overweight" title="Overweight: 25.0 – 29.9"></div>
                     <div class="spectrum-segment obese" title="Obese: ≥ 30.0"></div>
                 </div>
-                <div class="spectrum-labels">
-                    <span>Underweight (&lt; 18.5)</span>
-                    <span>Normal (18.5 – 24.9)</span>
-                    <span>Overweight (25.0 – 29.9)</span>
-                    <span>Obesity (≥ 30.0)</span>
+                <div class="spectrum-legend">
+                    <div class="legend-item"><span class="dot underweight"></span> Underweight (&lt; 18.5)</div>
+                    <div class="legend-item"><span class="dot normal"></span> Normal (18.5 – 24.9)</div>
+                    <div class="legend-item"><span class="dot overweight"></span> Overweight (25.0 – 29.9)</div>
+                    <div class="legend-item"><span class="dot obese"></span> Overweight / Obese (≥ 30.0)</div>
                 </div>
             </section>
 
-            <!-- Calculation History & Database Records Table -->
-            <section class="glass-card history-section" aria-labelledby="historyHeading">
-                <div class="history-header">
+            <!-- Calculation History -->
+            <section class="card history-card">
+                <div class="history-top">
                     <div>
-                        <h3 id="historyHeading" class="card-title">
-                            <span>📜</span> Calculation History <span id="historyCount">(0)</span>
-                        </h3>
-                        <p class="card-subtitle">All entries stored permanently in MySQL database (<code>bmi_db</code>)</p>
+                        <h2>Calculation History <span id="historyCount" class="count-badge">(0)</span></h2>
+                        <p>Saved records in MySQL database</p>
                     </div>
-
-                    <div class="history-controls">
-                        <input type="text" id="searchHistory" class="search-box" placeholder="🔍 Search by name or category..." aria-label="Search History">
-                        <button id="exportCsvBtn" class="btn-icon" title="Export calculations as CSV" aria-label="Export CSV">
-                            📥 Export CSV
-                        </button>
-                        <button id="refreshHistoryBtn" class="btn-icon" title="Refresh history" aria-label="Refresh History">
-                            🔄 Refresh
-                        </button>
+                    <div class="history-tools">
+                        <input type="text" id="searchHistory" class="search-input" placeholder="Search by name or category...">
+                        <button id="exportCsvBtn" class="btn-subtle" type="button">Export CSV</button>
+                        <button id="refreshHistoryBtn" class="btn-subtle" type="button">Refresh</button>
                     </div>
                 </div>
 
-                <div class="table-responsive">
+                <div class="table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -296,9 +260,7 @@
                         </thead>
                         <tbody id="historyTableBody">
                             <tr>
-                                <td colspan="8" style="text-align: center; color: var(--text-dim); padding: 32px;">
-                                    Loading history records from database...
-                                </td>
+                                <td colspan="8" class="table-empty">Loading records...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -306,46 +268,32 @@
             </section>
         </main>
 
-        <!-- MySQL Connection Modal -->
-        <div id="dbModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <!-- Database Modal -->
+        <div id="dbModal" class="modal-overlay">
             <div class="modal-dialog">
                 <div class="modal-header">
-                    <h3 id="modalTitle" class="card-title">🗄️ MySQL Database Configuration</h3>
-                    <button id="closeModalBtn" class="modal-close" aria-label="Close dialog">&times;</button>
+                    <h3>Database Settings</h3>
+                    <button id="closeModalBtn" class="modal-close" type="button">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 18px;">
-                        The backend connects to MySQL to store all BMI records in real-time.
-                    </p>
-                    <div class="config-item">
-                        <span>Host & Port:</span>
-                        <code>localhost:3306</code>
+                    <div class="config-row">
+                        <span class="config-key">Database:</span>
+                        <span class="config-val">MySQL (localhost:3306)</span>
                     </div>
-                    <div class="config-item">
-                        <span>Database Name:</span>
-                        <code>bmi_db</code>
+                    <div class="config-row">
+                        <span class="config-key">Database Name:</span>
+                        <span class="config-val">bmi_db</span>
                     </div>
-                    <div class="config-item">
-                        <span>Username:</span>
-                        <code>root</code>
+                    <div class="config-row">
+                        <span class="config-key">Table:</span>
+                        <span class="config-val">bmi_records</span>
                     </div>
-                    <div class="config-item">
-                        <span>Password:</span>
-                        <code>(empty / none)</code>
+                    <div class="config-row">
+                        <span class="config-key">Status:</span>
+                        <span class="config-val text-success">Online &amp; Connected</span>
                     </div>
-                    <div class="config-item">
-                        <span>Table Name:</span>
-                        <code>bmi_records</code>
-                    </div>
-                    <div class="config-item">
-                        <span>Auto-create database:</span>
-                        <code>Enabled (createDatabaseIfNotExist=true)</code>
-                    </div>
-
-                    <div style="margin-top: 24px; display: flex; gap: 10px;">
-                        <button id="retryDbBtn" class="btn-primary" style="flex: 1;" type="button">
-                            Re-test MySQL Connection
-                        </button>
+                    <div class="modal-actions">
+                        <button id="retryDbBtn" class="btn-primary" type="button">Check Connection</button>
                     </div>
                 </div>
             </div>
@@ -353,11 +301,10 @@
 
         <!-- Footer -->
         <footer class="app-footer">
-            <p>VitalScale &copy; 2026. Built with Java 21, Spring Boot, MySQL &amp; Vanilla Web Technologies.</p>
+            <p>BMI Calculator &middot; Simple, neat &amp; accurate health tracking</p>
         </footer>
     </div>
 
-    <!-- Script -->
     <script src="/js/app.js"></script>
 </body>
 </html>

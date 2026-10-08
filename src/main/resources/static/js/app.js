@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     // Theme Management
     // ----------------------------------------------------
-    const savedTheme = localStorage.getItem('vitalscale_theme') || 'dark';
+    const savedTheme = localStorage.getItem('vitalscale_theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
     updateThemeIcon(savedTheme);
 
@@ -278,11 +278,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function setLoading(isLoading) {
         if (isLoading) {
             submitBtn.disabled = true;
-            btnText.textContent = 'Calculating & Saving...';
+            btnText.textContent = 'Calculating...';
             btnSpinner.style.display = 'inline-block';
         } else {
             submitBtn.disabled = false;
-            btnText.textContent = 'Calculate & Save to MySQL';
+            btnText.textContent = 'Calculate BMI';
             btnSpinner.style.display = 'none';
         }
     }
@@ -425,8 +425,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     </span>
                 </td>
                 <td>
-                    <button class="btn-delete" title="Delete record" data-id="${rec.id}">
-                        🗑️
+                    <button class="btn-delete" title="Delete record" data-id="${rec.id}" aria-label="Delete">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
                     </button>
                 </td>
             `;
