@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Simple, neat, and accurate BMI Calculator powered purely by Java and Spring Boot with MySQL database persistence.">
+    <title>BMI Calculator (Java Application)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l.77.78L12 20.66l7.65-7.65.77-.78a5.4 5.4 0 0 0 0-7.65z"></path>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>BMI Calculator</h1>
+                    <p>Pure Java &amp; Spring Boot Application &middot; MySQL Database</p>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <div class="db-status-pill">
+                    <span class="status-dot" th:classappend="${dbConnected} ? 'online' : 'offline'"></span>
+                    <span th:text="${dbConnected} ? 'MySQL Connected' : 'MySQL Offline'">MySQL Connected</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Flash messages -->
+        <div th:if="${flashMessage}" class="flash-alert success" th:text="${flashMessage}"></div>
+        <div th:if="${flashError}" class="flash-alert error" th:text="${flashError}"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="main-grid">
+                <!-- Left: Form Card -->
+                <section class="card form-card">
+                    <div class="card-header">
+                        <h2>Body Metrics</h2>
+                        <p>Enter your information to calculate your BMI</p>
+                    </div>
+
+                    <!-- Unit Switcher Tabs (Pure Java Links) -->
+                    <div class="unit-switcher">
+                        <a th:href="@{/(unit='metric', search=${search})}" 
+                           class="unit-tab" 
+                           th:classappend="${unit == 'metric'} ? 'active' : ''">
+                            Metric (cm, kg)
+                        </a>
+                        <a th:href="@{/(unit='imperial', search=${search})}" 
+                           class="unit-tab" 
+                           th:classappend="${unit == 'imperial'} ? 'active' : ''">
+                            Imperial (ft, lbs)
+                        </a>
+                    </div>
+
+                    <!-- Pure Java Form -->
+                    <form th:action="@{/calculate(unit=${unit}, search=${search})}" th:object="${bmiRequest}" method="post">
+                        <!-- Full Name -->
+                        <div class="form-group">
+                            <label for="name">Full Name <span class="required">*</span></label>
+                            <input type="text" id="name" th:field="*{name}" class="form-control" placeholder="e.g. Alex Smith" required autocomplete="name">
+                            <div th:if="${#fields.hasErrors('name')}" class="form-error" th:errors="*{name}"></div>
+                        </div>
+
+                        <!-- Age -->
+                        <div class="form-group">
+                            <div class="label-row">
+                                <label for="age">Age</label>
+                                <span class="unit-tag">Years</span>
+                            </div>
+                            <input type="number" id="age" th:field="*{age}" class="form-control" min="1" max="120" placeholder="e.g. 25" required>
+                            <div th:if="${#fields.hasErrors('age')}" class="form-error" th:errors="*{age}"></div>
+                        </div>
+
+                        <!-- Height (Metric) -->
+                        <div th:if="${unit == 'metric'}" class="form-group">
+                            <div class="label-row">
+                                <label for="height">Height</label>
+                                <span class="unit-tag">(cm)</span>
+                            </div>
+                            <input type="number" id="height" th:field="*{height}" class="form-control" min="50" max="260" step="0.5" required>
+                            <div th:if="${#fields.hasErrors('height')}" class="form-error" th:errors="*{height}"></div>
+                        </div>
+
+                        <!-- Height (Imperial ft & in) -->
+                        <div th:if="${unit == 'imperial'}" class="form-group">
+                            <label>Height (Feet &amp; Inches)</label>
+                            <div class="dual-input-row">
+                                <div class="input-with-tag">
+                                    <input type="number" id="heightFt" th:field="*{height}" class="form-control" min="1" max="8" placeholder="5" required>
+                                    <span class="input-tag">ft</span>
+                                </div>
+                                <div class="input-with-tag">
+                                    <input type="number" id="heightIn" th:field="*{heightInches}" class="form-control" min="0" max="11" placeholder="9">
+                                    <span class="input-tag">in</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Weight -->
+                        <div class="form-group">
+                            <div class="label-row">
+                                <label for="weight">Weight</label>
+                                <span class="unit-tag" th:text="${unit == 'imperial'} ? '(lbs)' : '(kg)'">(kg)</span>
+                            </div>
+                            <input type="number" id="weight" th:field="*{weight}" class="form-control" min="20" max="500" step="0.5" required>
+                            <div th:if="${#fields.hasErrors('weight')}" class="form-error" th:errors="*{weight}"></div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Calculate BMI</button>
+                            <a th:href="@{/(unit=${unit})}" class="btn-secondary">Reset</a>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Right: Results Card -->
+                <section class="card results-card">
+                    <div class="card-header">
+                        <h2>BMI Analysis</h2>
+                        <p>Score, health category, and healthy target</p>
+                    </div>
+
+                    <!-- Empty State (when result is null) -->
+                    <div th:if="${result == null}" class="empty-state">
+                        <div class="empty-icon">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                        </div>
+                        <h3>No Calculation Yet</h3>
+                        <p>Fill in your body metrics on the left and click Calculate BMI to view your health analysis.</p>
+                    </div>
+
+                    <!-- Calculated Results (purely rendered by Java) -->
+                    <div th:if="${result != null}" class="results-container">
+                        <!-- Clean Arc Gauge -->
+                        <div class="gauge-wrapper">
+                            <svg class="gauge-svg" viewBox="0 0 240 135" aria-hidden="true">
+                                <defs>
+                                    <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#0284c7" />
+                                        <stop offset="35%" stop-color="#10b981" />
+                                        <stop offset="65%" stop-color="#f59e0b" />
+                                        <stop offset="100%" stop-color="#ef4444" />
+                                    </linearGradient>
+                                </defs>
+                                <path d="M 30 120 A 90 90 0 0 1 210 120" fill="none" stroke="var(--gauge-track)" stroke-width="12" stroke-linecap="round" />
+                                <path d="M 30 120 A 90 90 0 0 1 210 120" fill="none" stroke="url(#gaugeGradient)" stroke-width="10" stroke-linecap="round" />
+                                <g class="gauge-needle" th:style="'transform: rotate(' + ${result.gaugeAngle} + 'deg);'">
+                                    <circle cx="120" cy="120" r="6" fill="var(--text-main)" />
+                                    <line x1="120" y1="120" x2="120" y2="42" stroke="var(--text-main)" stroke-width="3" stroke-linecap="round" />
+                                </g>
+                            </svg>
+                        </div>
+
+                        <!-- BMI Numeric Value -->
+                        <div class="bmi-value-display">
+                            <div class="bmi-number" th:text="${result.bmi}">22.2</div>
+                            <div class="bmi-unit-label">kg/m²</div>
+                        </div>
+
+                        <!-- Category Badge -->
+                        <div class="category-badge"
+                             th:style="'color:' + ${result.categoryColor} + '; background:' + ${result.categoryColor} + '18; border-color:' + ${result.categoryColor} + ';'"
+                             th:text="${result.category}">
+                            Normal weight
+                        </div>
+
+                        <!-- Metrics Grid -->
+                        <div class="metrics-grid">
+                            <div class="metric-item">
+                                <div class="metric-label">Min Ideal Weight</div>
+                                <div class="metric-value" th:text="${result.minHealthyWeightKg} + ' kg'">56.7 kg</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-label">Max Ideal Weight</div>
+                                <div class="metric-value" th:text="${result.maxHealthyWeightKg} + ' kg'">76.3 kg</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-label">Weight Delta</div>
+                                <div class="metric-value" th:text="${result.weightDiffText}">Optimal range ✓</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-label">WHO Range</div>
+                                <div class="metric-value" th:text="${result.bmiRivRange}">18.5 – 24.9</div>
+                            </div>
+                        </div>
+
+                        <!-- Health Advice -->
+                        <div class="advice-box">
+                            <div class="advice-content">
+                                <h4>Health Guidance</h4>
+                                <p th:text="${result.healthAdvice}">Guidance...</p>
+                            </div>
+                        </div>
+
+                        <!-- Database Alert -->
+                        <div th:if="${result.savedToDatabase}" class="db-alert success">
+                            Saved in MySQL table <code>bmi_records</code> &middot; Record #<span th:text="${result.id}">1</span>
+                        </div>
+                        <div th:unless="${result.savedToDatabase}" class="db-alert warning" th:text="${result.databaseStatusMessage}">
+                            Persistence message
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- WHO Classification Spectrum Reference -->
+            <section class="card spectrum-card">
+                <div class="card-header">
+                    <h2>WHO BMI Categories</h2>
+                    <p>Standard World Health Organization guidelines</p>
+                </div>
+                <div class="spectrum-bar">
+                    <div class="spectrum-segment underweight" title="Underweight: < 18.5"></div>
+                    <div class="spectrum-segment normal" title="Normal: 18.5 – 24.9"></div>
+                    <div class="spectrum-segment overweight" title="Overweight: 25.0 – 29.9"></div>
+                    <div class="spectrum-segment obese" title="Obese: ≥ 30.0"></div>
+                </div>
+                <div class="spectrum-legend">
+                    <div class="legend-item"><span class="dot underweight"></span> Underweight (&lt; 18.5)</div>
+                    <div class="legend-item"><span class="dot normal"></span> Normal (18.5 – 24.9)</div>
+                    <div class="legend-item"><span class="dot overweight"></span> Overweight (25.0 – 29.9)</div>
+                    <div class="legend-item"><span class="dot obese"></span> Obese (≥ 30.0)</div>
+                </div>
+            </section>
+
+            <!-- Calculation History & Database Records Table -->
+            <section class="card history-card">
+                <div class="history-top">
+                    <div>
+                        <h2>Calculation History <span class="count-badge" th:text="'(' + ${historyCount} + ')'">(0)</span></h2>
+                        <p>Saved records in MySQL database (<code>bmi_db.bmi_records</code>)</p>
+                    </div>
+                    <div class="history-tools">
+                        <form method="get" th:action="@{/}" class="search-form">
+                            <input type="hidden" name="unit" th:value="${unit}">
+                            <input type="text" name="search" th:value="${search}" class="search-input" placeholder="Filter by name or category...">
+                            <button type="submit" class="btn-subtle">Filter</button>
+                        </form>
+                        <a th:href="@{/export/csv}" class="btn-subtle">Export CSV</a>
+                        <a th:href="@{/(unit=${unit})}" class="btn-subtle">Refresh</a>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Height</th>
+                                <th>Weight</th>
+                                <th>BMI</th>
+                                <th>Category</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(history)}">
+                                <td colspan="8" class="table-empty">
+                                    No calculation records found. Calculate a BMI above to store records in MySQL.
+                                </td>
+                            </tr>
+                            <tr th:each="rec : ${history}">
+                                <td th:text="'#' + ${rec.id}">#1</td>
+                                <td><strong th:text="${rec.name}">John</strong></td>
+                                <td th:text="${rec.age} + ' yrs'">25 yrs</td>
+                                <td th:text="${rec.heightCm} + ' cm'">175 cm</td>
+                                <td th:text="${rec.weightKg} + ' kg'">70 kg</td>
+                                <td><strong th:text="${#numbers.formatDecimal(rec.bmi, 1, 2)}">22.86</strong></td>
+                                <td>
+                                    <span class="table-badge" 
+                                          th:classappend="${rec.category == 'Underweight' ? 'badge-underweight' : (rec.category == 'Normal weight' ? 'badge-normal' : (rec.category == 'Overweight' ? 'badge-overweight' : 'badge-obese'))}"
+                                          th:text="${rec.category}">
+                                        Normal
+                                    </span>
+                                </td>
+                                <td>
+                                    <form th:action="@{'/delete/' + ${rec.id}(unit=${unit}, search=${search})}" method="post" style="display:inline;">
+                                        <button type="submit" class="btn-delete" title="Delete record" aria-label="Delete">
+                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>BMI Calculator &middot; 100% Java &amp; Spring Boot Application &middot; MySQL Connected</p>
+        </footer>
+    </div>
+</body>
+</html>

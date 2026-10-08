@@ -132,4 +132,44 @@ public class BmiResponse {
     public void setCalculatedAt(LocalDateTime calculatedAt) {
         this.calculatedAt = calculatedAt;
     }
+
+    public String getWeightDiffText() {
+        if (weightKg == null || minHealthyWeightKg == null || maxHealthyWeightKg == null) {
+            return "--";
+        }
+        if (weightKg < minHealthyWeightKg) {
+            double diff = Math.round((minHealthyWeightKg - weightKg) * 10.0) / 10.0;
+            return "+" + diff + " kg to healthy";
+        } else if (weightKg > maxHealthyWeightKg) {
+            double diff = Math.round((weightKg - maxHealthyWeightKg) * 10.0) / 10.0;
+            return "-" + diff + " kg to healthy";
+        } else {
+            return "Optimal range ✓";
+        }
+    }
+
+    public double getBmiPercentage() {
+        if (bmi == null) return 0.0;
+        double clamped = Math.max(15.0, Math.min(40.0, bmi));
+        return Math.round(((clamped - 15.0) / (40.0 - 15.0)) * 100.0 * 10.0) / 10.0;
+    }
+
+    public double getGaugeAngle() {
+        if (bmi == null) return -80.0;
+        double clamped = Math.max(15.0, Math.min(40.0, bmi));
+        double pct = (clamped - 15.0) / (40.0 - 15.0);
+        return Math.round((-80.0 + (pct * 160.0)) * 10.0) / 10.0;
+    }
+
+    public String getBmiRivRange() {
+        if (category == null) return "--";
+        switch (category) {
+            case "Underweight": return "< 18.5";
+            case "Normal weight": return "18.5 – 24.9";
+            case "Overweight": return "25.0 – 29.9";
+            case "Obesity Class I": return "30.0 – 34.9";
+            case "Obesity Class II": return "35.0 – 39.9";
+            default: return "≥ 40.0";
+        }
+    }
 }
